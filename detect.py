@@ -27,11 +27,11 @@ def load_classes(path):
         names = f.read().split('\n')
     return list(filter(None, names))  # filter removes empty strings (such as last line)
 
-def detect(img, cfg, names, source, weights, device = '', imgsz = 1280, save_img=False, out = "inference/output"):
+def detect(img, cfg, names, source, weights, conf_thres = 0.5, iou_thres = 0.5, classes=None, agnostic=False, device = '', imgsz = 1280, save_img=False, out = "inference/output"):
     webcam = source == '0' or source.startswith('rtsp') or source.startswith('http') or source.endswith('.txt')
 
     # Initialize
-    device = select_device(opt.device)
+    device = select_device(device)
     if os.path.exists(out):
         shutil.rmtree(out)  # delete output folder
     os.makedirs(out)  # make new output folder
@@ -80,10 +80,10 @@ def detect(img, cfg, names, source, weights, device = '', imgsz = 1280, save_img
 
         # Inference
     t1 = time_synchronized()
-    pred = model(img, augment=opt.augment)[0]
+    pred = model(img, augment=False)[0]
 
         # Apply NMS
-    pred = non_max_suppression(pred, opt.conf_thres, opt.iou_thres, classes=opt.classes, agnostic=opt.agnostic_nms)
+    pred = non_max_suppression(pred, conf_thres, iou_thres, classes=classes, agnostic=agnostic_nms)
     t2 = time_synchronized()
 
         # Apply Classifier
@@ -114,38 +114,9 @@ def detect(img, cfg, names, source, weights, device = '', imgsz = 1280, save_img
                 # Write results
             for *xyxy, conf, cls in det:
                 xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                ret.append([str(cls) + " " + *xywh])
+                ret.append([str(cls) + " " + str(xywh)])
 
             # Print time (inference + NMS)
         print('%sDone. (%.3fs)' % (s, t2 - t1))
     print(ret)
     print('Done. (%.3fs)' % (time.time() - t0))
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', nargs='+', type=str, default='yolor_p6.pt', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default='inference/images', help='source')  # file/folder, 0 for webcam
-    parser.add_argument('--output', type=str, default='inference/output', help='output folder')  # output folder
-    parser.add_argument('--img-size', type=int, default=1280, help='inference size (pixels)')
-    parser.add_argument('--conf-thres', type=float, default=0.4, help='object confidence threshold')
-    parser.add_argument('--iou-thres', type=float, default=0.5, help='IOU threshold for NMS')
-    parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-    parser.add_argument('--view-img', action='store_true', help='display results')
-    parser.add_argument('--save-txt', action='store_true', help='save results to *.txt')
-    parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --class 0, or --class 0 2 3')
-    parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS')
-    parser.add_argument('--augment', action='store_true', help='augmented inference')
-    parser.add_argument('--update', action='store_true', help='update all models')
-    parser.add_argument('--cfg', type=str, default='cfg/yolor_p6.cfg', help='*.cfg path')
-    parser.add_argument('--names', type=str, default='data/coco.names', help='*.cfg path')
-    opt = parser.parse_args()
-    print(opt)
-
-    with torch.no_grad():
-        if opt.update:  # update all models (to fix SourceChangeWarning)
-            for opt.weights in ['']:
-                detect()
-                strip_optimizer(opt.weights)
-        else:
-            detect()
