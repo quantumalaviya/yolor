@@ -53,16 +53,6 @@ def detect(image, cfg, names, source, weights, conf_thres = 0.5, iou_thres = 0.5
         modelc.load_state_dict(torch.load('weights/resnet101.pt', map_location=device)['model'])  # load weights
         modelc.to(device).eval()
 
-    # Set Dataloader
-    vid_path, vid_writer = None, None
-    if webcam:
-        view_img = True
-        cudnn.benchmark = True  # set True to speed up constant image size inference
-        dataset = LoadStreams(source, img_size=imgsz)
-    else:
-        save_img = True
-        dataset = LoadImages(source, img_size=imgsz, auto_size=64)
-
     # Get names and colors
     names = load_classes(names)
     colors = [[random.randint(0, 255) for _ in range(3)] for _ in range(len(names))]
