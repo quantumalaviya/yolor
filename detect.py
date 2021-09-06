@@ -27,7 +27,7 @@ def load_classes(path):
         names = f.read().split('\n')
     return list(filter(None, names))  # filter removes empty strings (such as last line)
 
-def detect(source, weights, cfg, names, conf_thres = 0.5, iou_thres = 0.5, imgsz = 1280, save_img=False, out = '', device = ''):
+def detect(source, weights, cfg, names, conf_thres = 0.5, iou_thres = 0.5, imgsz = 1280, save_img=False, out = 'inference/output', device = ''):
     webcam = source == '0' or source.startswith('rtsp') or source.startswith('http') or source.endswith('.txt')
 
     # Initialize
