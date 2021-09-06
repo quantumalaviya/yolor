@@ -115,7 +115,7 @@ def detect(source, weights, cfg, names, conf_thres = 0.5, iou_thres = 0.5, imgsz
                 # Write results
                 for *xyxy, conf, cls in det:
                     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                    ret.append([str(cls)] + xywh)
+                    ret.append([cls] + xywh)
 
             # Print time (inference + NMS)
             print('%sDone. (%.3fs)' % (s, t2 - t1))
