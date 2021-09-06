@@ -71,6 +71,8 @@ def detect(source, weights, cfg, names, conf_thres = 0.5, iou_thres = 0.5, imgsz
     t0 = time.time()
     img = torch.zeros((1, 3, imgsz, imgsz), device=device)  # init img
     _ = model(img.half() if half else img) if device.type != 'cpu' else None  # run once
+    
+    ret = []
     for path, img, im0s, vid_cap in dataset:
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
@@ -113,9 +115,10 @@ def detect(source, weights, cfg, names, conf_thres = 0.5, iou_thres = 0.5, imgsz
                 # Write results
                 for *xyxy, conf, cls in det:
                     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                    print(xywh)
+                    ret.append([str(cls)] + xywh)
 
             # Print time (inference + NMS)
             print('%sDone. (%.3fs)' % (s, t2 - t1))
 
     print('Done. (%.3fs)' % (time.time() - t0))
+    return ret
