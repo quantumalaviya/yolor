@@ -27,7 +27,7 @@ def load_classes(path):
         names = f.read().split('\n')
     return list(filter(None, names))  # filter removes empty strings (such as last line)
 
-def detect(img, cfg, names, source, weights, conf_thres = 0.5, iou_thres = 0.5, classes=None, agnostic=False, device = '', imgsz = 1280, save_img=False, out = "inference/output"):
+def detect(image, cfg, names, source, weights, conf_thres = 0.5, iou_thres = 0.5, classes=None, agnostic=False, device = '', imgsz = 1280, save_img=False, out = "inference/output"):
     webcam = source == '0' or source.startswith('rtsp') or source.startswith('http') or source.endswith('.txt')
 
     # Initialize
@@ -72,7 +72,7 @@ def detect(img, cfg, names, source, weights, conf_thres = 0.5, iou_thres = 0.5, 
     img = torch.zeros((1, 3, imgsz, imgsz), device=device)  # init img
     _ = model(img.half() if half else img) if device.type != 'cpu' else None  # run once
     
-    img = torch.from_numpy(img).to(device)
+    img = torch.from_numpy(image).to(device)
     img = img.half() if half else img.float()  # uint8 to fp16/32
     img /= 255.0  # 0 - 255 to 0.0 - 1.0
     if img.ndimension() == 3:
