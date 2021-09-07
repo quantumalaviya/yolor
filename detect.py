@@ -81,7 +81,7 @@ class detect:
 
             # Apply NMS
             pred = non_max_suppression(pred, conf_thres, iou_thres, classes=None, agnostic=False)
-
+            
             # Process detections
             for i, det in enumerate(pred):  # detections per image
                 if webcam:  # batch_size >= 1
@@ -106,4 +106,6 @@ class detect:
                     for *xyxy, conf, cls in det:
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                         ret.append([cls] + xywh)
+             
+            torch.cuda.empty_cache()
         yield ret
