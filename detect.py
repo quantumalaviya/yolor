@@ -54,7 +54,7 @@ class detect:
         _ = self.model(img.half() if half else img) if self.device.type != 'cpu' else None  # run once
 
 
-    def detect(source, conf_thres = 0.5, iou_thres = 0.5):
+    def detect(self, source, conf_thres = 0.5, iou_thres = 0.5):
         webcam = source == '0' or source.startswith('rtsp') or source.startswith('http') or source.endswith('.txt')
 
         # Set Dataloader
