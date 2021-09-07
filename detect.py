@@ -81,11 +81,6 @@ class detect:
             # Apply NMS
             pred = non_max_suppression(pred, conf_thres, iou_thres, classes=None, agnostic=False)
 
-
-            # Apply Classifier
-            if classify:
-                pred = apply_classifier(pred, modelc, img, im0s)
-
             # Process detections
             for i, det in enumerate(pred):  # detections per image
                 if webcam:  # batch_size >= 1
