@@ -106,4 +106,4 @@ class detect:
                     for *xyxy, conf, cls in det:
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                         ret.append([cls] + xywh)
-        return ret
+        yield ret
