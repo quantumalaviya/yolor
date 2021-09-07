@@ -78,11 +78,12 @@ class detect:
                 img = img.unsqueeze(0)
 
             # Inference
+            t1 = time_synchronized()
             pred = self.model(img, augment=False)[0]
 
             # Apply NMS
             pred = non_max_suppression(pred, conf_thres, iou_thres, classes=None, agnostic=False)
-            
+            t2 = time_synchronized()
             # Process detections
             for i, det in enumerate(pred):  # detections per image
                 if webcam:  # batch_size >= 1
@@ -107,6 +108,7 @@ class detect:
                     for *xyxy, conf, cls in det:
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                         ret.append([cls] + xywh)
+                print('%sDone. (%.3fs)' % (s, t2 - t1))
             del img
             gc.collect()
             torch.cuda.empty_cache()
