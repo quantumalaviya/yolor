@@ -34,7 +34,7 @@ class detect:
         if os.path.exists(out):
             shutil.rmtree(out)  # delete output folder
         os.makedirs(out)  # make new output folder
-        half = self.device.type != 'cpu'
+        self.half = self.device.type != 'cpu'
 
         self.imgsz = imgsz
 
@@ -42,7 +42,7 @@ class detect:
         self.model.load_state_dict(torch.load(weights[0], map_location=self.device)['model'])
 
         self.model.to(self.device).eval()
-        if half:
+        if self.half:
             self.model.half()  # to FP16
 
         # Get names and colors
@@ -51,7 +51,7 @@ class detect:
 
         # Run inference
         img = torch.zeros((1, 3, imgsz, imgsz), device=self.device)  # init img
-        _ = self.model(img.half() if half else img) if self.device.type != 'cpu' else None  # run once
+        _ = self.model(img.half() if self.half else img) if self.device.type != 'cpu' else None  # run once
 
 
     def detect(self, source, conf_thres = 0.5, iou_thres = 0.5):
@@ -70,7 +70,7 @@ class detect:
         ret = []
         for path, img, im0s, vid_cap in dataset:
             img = torch.from_numpy(img).to(self.device)
-            img = img.half() if half else img.float()  # uint8 to fp16/32
+            img = img.half() if self.half else img.float()  # uint8 to fp16/32
             img /= 255.0  # 0 - 255 to 0.0 - 1.0
             if img.ndimension() == 3:
                 img = img.unsqueeze(0)
