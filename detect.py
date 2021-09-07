@@ -1,5 +1,6 @@
 import argparse
 import os
+import gc
 import platform
 import shutil
 import time
@@ -106,6 +107,7 @@ class detect:
                     for *xyxy, conf, cls in det:
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                         ret.append([cls] + xywh)
-            del img  
+            del img
+            gc.collect()
             torch.cuda.empty_cache()
         yield ret
