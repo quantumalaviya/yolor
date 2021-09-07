@@ -50,7 +50,7 @@ class detect:
         self.colors = [[random.randint(0, 255) for _ in range(3)] for _ in range(len(names))]
 
         # Run inference
-        img = torch.zeros((1, 3, imgsz, imgsz), device=device)  # init img
+        img = torch.zeros((1, 3, imgsz, imgsz), device=self.device)  # init img
         _ = self.model(img.half() if half else img) if self.device.type != 'cpu' else None  # run once
 
 
