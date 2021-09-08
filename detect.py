@@ -107,7 +107,7 @@ class model:
                     # Write results
                     for *xyxy, conf, cls in det:
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                        ret.append([cls] + xywh)
+                        ret.append([str(int((iter[0][0][0].detach().cpu().numpy())))] + list(map(str, xywh)))
                         
                         if save_img or view_img:  # Add bbox to image
                             label = '%s %.2f' % (self.names[int(cls)], conf)
