@@ -112,4 +112,4 @@ class detect:
             del img
             gc.collect()
             torch.cuda.empty_cache()
-            yield ret
+        return ret
