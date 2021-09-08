@@ -30,7 +30,7 @@ def load_classes(path):
 
 
 class detect:
-    def __init__(self, weights, cfg, names, device = '', imgsz = 1280, out = 'inference/output'):
+    def __init__(self, weights, cfg, names, device = '', imgsz = 1280, out = 'inference/output', save_img = True):
         self.device = select_device(device)
         if os.path.exists(out):
             shutil.rmtree(out)  # delete output folder
@@ -108,8 +108,14 @@ class detect:
                     for *xyxy, conf, cls in det:
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                         ret.append([cls] + xywh)
+                        
+                        if save_img or view_img:  # Add bbox to image
+                            label = '%s %.2f' % (names[int(cls)], conf)
+                            plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
+                    
+
                 print('%sDone. (%.3fs)' % (s, t2 - t1))
             del img
             gc.collect()
             torch.cuda.empty_cache()
-        return ret
+        return ret, im0
