@@ -1,6 +1,6 @@
 import torch.nn.functional as F
 
-from tolorutils.general import *
+from yolor.tolorutils.general import *
 
 import torch
 from torch import nn
