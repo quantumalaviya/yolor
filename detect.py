@@ -29,7 +29,7 @@ def load_classes(path):
     return list(filter(None, names))  # filter removes empty strings (such as last line)
 
 
-class detect:
+class model:
     def __init__(self, weights, cfg, names, device = '', imgsz = 1280, out = 'inference/output', save_img = True):
         self.device = select_device(device)
         if os.path.exists(out):
@@ -56,7 +56,7 @@ class detect:
         _ = self.model(img.half() if self.half else img) if self.device.type != 'cpu' else None  # run once
 
 
-    def detect(self, source, conf_thres = 0.5, iou_thres = 0.5):
+    def predict(self, source, conf_thres = 0.5, iou_thres = 0.5):
         webcam = source == '0' or source.startswith('rtsp') or source.startswith('http') or source.endswith('.txt')
 
         # Set Dataloader
